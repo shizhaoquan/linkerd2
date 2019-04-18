@@ -8,7 +8,6 @@ import (
 	"testing"
 
 	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/runtime/schema"
 )
 
 func TestNewFakeClientSets(t *testing.T) {
@@ -52,7 +51,7 @@ spec:
 		tc := tc // pin
 
 		t.Run(fmt.Sprintf("%d", i), func(t *testing.T) {
-			_, _, err := NewFakeClientSets(tc.k8sConfigs...)
+			_, _, _, err := NewFakeClientSets(tc.k8sConfigs...)
 			if !reflect.DeepEqual(err, tc.err) {
 				t.Fatalf("Expected error: %s, Got: %s", tc.err, err)
 			}
@@ -130,7 +129,7 @@ items:
 				readers = append(readers, strings.NewReader(m))
 			}
 
-			_, _, err := NewFakeClientSetsFromManifests(readers)
+			_, _, _, err := newFakeClientSetsFromManifests(readers)
 			if !reflect.DeepEqual(err, tc.err) {
 				t.Fatalf("Expected error: %s, Got: %s", tc.err, err)
 			}
@@ -199,11 +198,7 @@ spec:
     kind: FakeCRD
     shortNames:
     - fc`,
-			runtime.NewNotRegisteredGVKErrForTarget(
-				"k8s.io/client-go/kubernetes/scheme/register.go:61",
-				schema.GroupVersionKind{Group: "apiextensions.k8s.io", Version: "v1beta1", Kind: "CustomResourceDefinition"},
-				nil,
-			),
+			nil,
 		},
 	}
 
